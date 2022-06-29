@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoviesAPI.Components;
 using MoviesAPI.Data;
-using MoviesAPI.Data.Dtos.Movie;
+using MoviesAPI.Data.Dtos.Address;
 using MoviesAPI.Interfaces;
 using MoviesAPI.Models;
 using System;
@@ -12,27 +12,27 @@ namespace MoviesAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class MovieController : ControllerBase
+    public class AddressController : ControllerBase
     {
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
-        private readonly IMovie _movieInterface;
+        private readonly IAddress _addressInterface;
 
-        public MovieController(AppDbContext context, IMapper mapper)
+        public AddressController(AppDbContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
-            _movieInterface = new MovieComponent(context);
+            _addressInterface = new AddressComponent(context);
         }
 
-        #region GetMovie
+        #region GetAddress
 
         [HttpGet]
-        public IActionResult GetAllMovies()
+        public IActionResult GetAllAddresses()
         {
             try
             {
-                return Ok(_movieInterface.GetAllMovies());
+                return Ok(_addressInterface.GetAllAddress());
             }
             catch (Exception message)
             {
@@ -42,23 +42,23 @@ namespace MoviesAPI.Controllers
 
         #endregion
 
-        #region GetMovieById
+        #region GetAddressById
 
         [HttpGet ("{id}")]
-        public IActionResult GetMovieById(int id)
+        public IActionResult GetAddressById(int id)
         {
             try
             {
-                Movie movie = _movieInterface.GetMovieById(id);
+                Address Address = _addressInterface.GetAddressById(id);
 
-                if (movie != null)
+                if (Address != null)
                 {
-                    ReadMovieDto readMovie = _mapper.Map<ReadMovieDto>(movie);
+                    ReadAddressDto readMovie = _mapper.Map<ReadAddressDto>(Address);
                     readMovie.LookupDate = DateTime.Now;
                     return Ok(readMovie);
                 }
 
-                return NotFound(new { Message = "Informed movie doesn't exist or wasn't found." });
+                return NotFound(new { Message = "Informed address doesn't exist or wasn't found." });
             }
             catch (Exception message)
             {
@@ -68,16 +68,16 @@ namespace MoviesAPI.Controllers
 
         #endregion
 
-        #region AddMovie
+        #region AddAddress
 
         [HttpPost]
-        public IActionResult AddMovie([FromBody] CreateMovieDto newMovie)
+        public IActionResult AddAddress([FromBody] CreateAddressDto newMovie)
         {
             try
             {
-                Movie movie = _mapper.Map<Movie>(newMovie);
-                _movieInterface.AddMovie(movie);
-                return CreatedAtAction(nameof(GetMovieById), new { movie.Id }, movie);
+                Address Address = _mapper.Map<Address>(newMovie);
+                _addressInterface.AddAddress(Address);
+                return CreatedAtAction(nameof(GetAddressById), new { Address.Id }, Address);
             }
             catch (DbUpdateException message)
             {
@@ -91,17 +91,17 @@ namespace MoviesAPI.Controllers
 
         #endregion
 
-        #region UpdateMovie
+        #region UpdateAddress
 
         [HttpPut("{id}")]
-        public IActionResult UpdateMovie(int id, [FromBody] UpdateMovieDto updateMovie)
+        public IActionResult UpdateMovie(int id, [FromBody] UpdateAddressDto updateMovie)
         {
             try
             {
-                Movie movie = _movieInterface.GetMovieById(id);
-                _mapper.Map(updateMovie, movie);
-                _movieInterface.UpdateMovie(movie);
-                return Ok(new {Message = "Movie successfully updated." });
+                Address Address = _addressInterface.GetAddressById(id);
+                _mapper.Map(updateMovie, Address);
+                _addressInterface.UpdateAddress(Address);
+                return Ok(new {Message = "Address successfully updated." });
             }
             catch (DbUpdateException message)
             {
@@ -115,15 +115,15 @@ namespace MoviesAPI.Controllers
 
         #endregion
 
-        #region DeleteMovie
+        #region DeleteAddress
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteMovie(int id)
+        public IActionResult DeleteAddress(int id)
         {
             try
             {
-                _movieInterface.DeleteMovie(id);
-                return Ok(new { Message = "Movie successfully deleted." });
+                _addressInterface.DeleteAddress(id);
+                return Ok(new { Message = "Address successfully deleted." });
             }
             catch (DbUpdateException message)
             {

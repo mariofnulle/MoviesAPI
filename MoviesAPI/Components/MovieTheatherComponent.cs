@@ -8,22 +8,22 @@ using System.Linq;
 
 namespace MoviesAPI.Components
 {
-    public class MovieComponent : IMovie
+    public class MovieTheatherComponent : IMovieTheather
     {
         private readonly AppDbContext _context;
 
-        public MovieComponent(AppDbContext context)
+        public MovieTheatherComponent(AppDbContext context)
         {
             _context = context;
         }
 
-        #region GetAllMovies
+        #region GetAllMovieTheathers
 
-        public IEnumerable<Movie> GetAllMovies()
+        public IEnumerable<MovieTheather> GetAllMovieTheathers()
         {
             try
             {
-                return _context.Movies;
+                return _context.MovieTheathers;
 
             }
             catch (Exception)
@@ -32,25 +32,16 @@ namespace MoviesAPI.Components
             }
         }
 
-        public IEnumerable<Movie> GetAllMovies(string title, string director, string gender, int? duration)
+        public IEnumerable<MovieTheather> GetAllMovieTheathers(string name)
         {
             try
             {
-                IEnumerable<Movie> moviesList = _context.Movies;
+                IEnumerable<MovieTheather> MovieTheathersList = _context.MovieTheathers;
 
-                if (!string.IsNullOrEmpty(title))
-                    moviesList = moviesList.Where(movie => movie.Title.Contains(title));
+                if (!string.IsNullOrEmpty(name))
+                    MovieTheathersList = MovieTheathersList.Where(MovieTheather => MovieTheather.Name.Contains(name));
 
-                if (!string.IsNullOrEmpty(director))
-                    moviesList = moviesList.Where(movie => movie.Director.Contains(director));
-
-                if (!string.IsNullOrEmpty(gender))
-                    moviesList = moviesList.Where(movie => movie.Gender.Contains(gender));
-
-                if (duration != null && duration > 0)
-                    moviesList = moviesList.Where(movie => movie.Duration == duration);
-
-                return moviesList;
+                return MovieTheathersList;
 
             }
             catch (Exception)
@@ -61,13 +52,13 @@ namespace MoviesAPI.Components
 
         #endregion
 
-        #region GetMovieById
+        #region GetMovieTheatherById
 
-        public Movie GetMovieById(int id)
+        public MovieTheather GetMovieTheatherById(int id)
         {
             try
             {
-                return _context.Movies.FirstOrDefault(movie => movie.Id == id);
+                return _context.MovieTheathers.FirstOrDefault(MovieTheather => MovieTheather.Id == id);
 
             }
             catch (Exception)
@@ -78,18 +69,18 @@ namespace MoviesAPI.Components
 
         #endregion
 
-        #region AddMovie
+        #region AddMovieTheather
 
-        public void AddMovie(Movie movie)
+        public void AddMovieTheather(MovieTheather MovieTheather)
         {
             try
             {
-                _context.Movies.Add(movie);
+                _context.MovieTheathers.Add(MovieTheather);
                 _context.SaveChanges();
             }
             catch (DbUpdateException)
             {
-                throw new DbUpdateException("An error ocurred when adding a new movie.");
+                throw new DbUpdateException("An error ocurred when adding a new Movie Theather.");
             }
             catch (Exception)
             {
@@ -99,18 +90,18 @@ namespace MoviesAPI.Components
 
         #endregion
 
-        #region UpdateMovie
+        #region UpdateMovieTheather
 
-        public void UpdateMovie(Movie movie)
+        public void UpdateMovieTheather(MovieTheather MovieTheather)
         {
             try
             {
-                _context.Movies.Update(movie);
+                _context.MovieTheathers.Update(MovieTheather);
                 _context.SaveChanges();
             }
             catch (DbUpdateException)
             {
-                throw new DbUpdateException("An error ocurred when updating the movie.");
+                throw new DbUpdateException("An error ocurred when updating the Movie Theather.");
             }
             catch (Exception)
             {
@@ -120,23 +111,23 @@ namespace MoviesAPI.Components
 
         #endregion
 
-        #region DeleteMovie
+        #region DeleteMovieTheather
 
-        public void DeleteMovie(int id)
+        public void DeleteMovieTheather(int id)
         {
             try
             {
-                Movie movie = GetMovieById(id);
+                MovieTheather MovieTheather = GetMovieTheatherById(id);
 
-                if (movie == null)
+                if (MovieTheather == null)
                     throw new DbUpdateException();
 
-                _context.Movies.Remove(movie);
+                _context.MovieTheathers.Remove(MovieTheather);
                 _context.SaveChanges();
             }
             catch (DbUpdateException)
             {
-                throw new DbUpdateException("An error ocurred when removing the movie.");
+                throw new DbUpdateException("An error ocurred when removing the Movie Theather.");
             }
             catch (Exception)
             {

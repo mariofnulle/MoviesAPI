@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoviesAPI.Components;
 using MoviesAPI.Data;
-using MoviesAPI.Data.Dtos.Movie;
+using MoviesAPI.Data.Dtos.MovieTheather;
 using MoviesAPI.Interfaces;
 using MoviesAPI.Models;
 using System;
@@ -12,27 +12,27 @@ namespace MoviesAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class MovieController : ControllerBase
+    public class MovieTheatherController : ControllerBase
     {
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
-        private readonly IMovie _movieInterface;
+        private readonly IMovieTheather _movieTheatherInterface;
 
-        public MovieController(AppDbContext context, IMapper mapper)
+        public MovieTheatherController(AppDbContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
-            _movieInterface = new MovieComponent(context);
+            _movieTheatherInterface = new MovieTheatherComponent(context);
         }
 
-        #region GetMovie
+        #region GetMovieTheather
 
         [HttpGet]
-        public IActionResult GetAllMovies()
+        public IActionResult GetAllMovieTheathers()
         {
             try
             {
-                return Ok(_movieInterface.GetAllMovies());
+                return Ok(_movieTheatherInterface.GetAllMovieTheathers());
             }
             catch (Exception message)
             {
@@ -42,23 +42,23 @@ namespace MoviesAPI.Controllers
 
         #endregion
 
-        #region GetMovieById
+        #region GetMovieTheatherById
 
         [HttpGet ("{id}")]
-        public IActionResult GetMovieById(int id)
+        public IActionResult GetMovieTheatherById(int id)
         {
             try
             {
-                Movie movie = _movieInterface.GetMovieById(id);
+                MovieTheather movieTheather = _movieTheatherInterface.GetMovieTheatherById(id);
 
-                if (movie != null)
+                if (movieTheather != null)
                 {
-                    ReadMovieDto readMovie = _mapper.Map<ReadMovieDto>(movie);
+                    ReadMovieTheatherDto readMovie = _mapper.Map<ReadMovieTheatherDto>(movieTheather);
                     readMovie.LookupDate = DateTime.Now;
                     return Ok(readMovie);
                 }
 
-                return NotFound(new { Message = "Informed movie doesn't exist or wasn't found." });
+                return NotFound(new { Message = "Informed movie theather doesn't exist or wasn't found." });
             }
             catch (Exception message)
             {
@@ -68,16 +68,16 @@ namespace MoviesAPI.Controllers
 
         #endregion
 
-        #region AddMovie
+        #region AddMovieTheather
 
         [HttpPost]
-        public IActionResult AddMovie([FromBody] CreateMovieDto newMovie)
+        public IActionResult AddMovieTheather([FromBody] CreateMovieTheatherDto newMovie)
         {
             try
             {
-                Movie movie = _mapper.Map<Movie>(newMovie);
-                _movieInterface.AddMovie(movie);
-                return CreatedAtAction(nameof(GetMovieById), new { movie.Id }, movie);
+                MovieTheather movieTheather = _mapper.Map<MovieTheather>(newMovie);
+                _movieTheatherInterface.AddMovieTheather(movieTheather);
+                return CreatedAtAction(nameof(GetMovieTheatherById), new { movieTheather.Id }, movieTheather);
             }
             catch (DbUpdateException message)
             {
@@ -91,17 +91,17 @@ namespace MoviesAPI.Controllers
 
         #endregion
 
-        #region UpdateMovie
+        #region UpdateMovieTheather
 
         [HttpPut("{id}")]
-        public IActionResult UpdateMovie(int id, [FromBody] UpdateMovieDto updateMovie)
+        public IActionResult UpdateMovie(int id, [FromBody] UpdateMovieTheatherDto updateMovie)
         {
             try
             {
-                Movie movie = _movieInterface.GetMovieById(id);
-                _mapper.Map(updateMovie, movie);
-                _movieInterface.UpdateMovie(movie);
-                return Ok(new {Message = "Movie successfully updated." });
+                MovieTheather movieTheather = _movieTheatherInterface.GetMovieTheatherById(id);
+                _mapper.Map(updateMovie, movieTheather);
+                _movieTheatherInterface.UpdateMovieTheather(movieTheather);
+                return Ok(new {Message = "Movie theather successfully updated." });
             }
             catch (DbUpdateException message)
             {
@@ -115,15 +115,15 @@ namespace MoviesAPI.Controllers
 
         #endregion
 
-        #region DeleteMovie
+        #region DeleteMovieTheather
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteMovie(int id)
+        public IActionResult DeleteMovieTheather(int id)
         {
             try
             {
-                _movieInterface.DeleteMovie(id);
-                return Ok(new { Message = "Movie successfully deleted." });
+                _movieTheatherInterface.DeleteMovieTheather(id);
+                return Ok(new { Message = "Movie theather successfully deleted." });
             }
             catch (DbUpdateException message)
             {

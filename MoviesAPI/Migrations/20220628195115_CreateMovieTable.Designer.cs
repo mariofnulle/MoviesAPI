@@ -8,7 +8,7 @@ using MoviesAPI.Data;
 
 namespace MoviesAPI.Migrations
 {
-    [DbContext(typeof(MovieContext))]
+    [DbContext(typeof(AppDbContext))]
     [Migration("20220628195115_CreateMovieTable")]
     partial class CreateMovieTable
     {
