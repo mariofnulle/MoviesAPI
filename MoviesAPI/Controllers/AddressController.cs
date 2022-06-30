@@ -54,7 +54,6 @@ namespace MoviesAPI.Controllers
                 if (Address != null)
                 {
                     ReadAddressDto readMovie = _mapper.Map<ReadAddressDto>(Address);
-                    readMovie.LookupDate = DateTime.Now;
                     return Ok(readMovie);
                 }
 

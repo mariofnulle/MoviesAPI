@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace MoviesAPI.Data.Dtos.MovieTheather
 {
@@ -10,6 +9,6 @@ namespace MoviesAPI.Data.Dtos.MovieTheather
         public int Id { get; set; }
         [Required(ErrorMessage = "Name can't be empty.")]
         public string Name { get; set; }
-        public DateTime LookupDate { get; set; }
+        public Models.Address Address { get; set; }
     }
 }

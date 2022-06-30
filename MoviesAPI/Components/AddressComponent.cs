@@ -17,9 +17,9 @@ namespace MoviesAPI.Components
             _context = context;
         }
 
-        #region GetAllAddresses
+        #region GetAllAddress
 
-        public IEnumerable<Address> GetAllAddresses()
+        public IEnumerable<Address> GetAllAddress()
         {
             try
             {
@@ -32,7 +32,7 @@ namespace MoviesAPI.Components
             }
         }
 
-        public IEnumerable<Address> GetAllAddresses(string addressName, string neighbordhood, int? number)
+        public IEnumerable<Address> GetAllAddress(string addressName, string neighbordhood, int? number)
         {
             try
             {
