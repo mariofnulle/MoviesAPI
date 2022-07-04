@@ -8,9 +8,9 @@ namespace MoviesAPI.Profiles
     {
         public MovieProfile()
         {
-            CreateMap<CreateMovieDto, Address>();
-            CreateMap<UpdateMovieDto, Address>();
-            CreateMap<Address, ReadMovieDto>();
+            CreateMap<CreateMovieDto, Movie>();
+            CreateMap<UpdateMovieDto, Movie>();
+            CreateMap<Movie, ReadMovieDto>();
         }
     }
 }

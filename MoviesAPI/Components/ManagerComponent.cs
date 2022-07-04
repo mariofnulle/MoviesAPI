@@ -8,22 +8,22 @@ using System.Linq;
 
 namespace MoviesAPI.Components
 {
-    public class MovieComponent : IMovie
+    public class ManagerComponent : IManager
     {
         private readonly AppDbContext _context;
 
-        public MovieComponent(AppDbContext context)
+        public ManagerComponent(AppDbContext context)
         {
             _context = context;
         }
 
-        #region GetAllMovies
+        #region GetAllManagers
 
-        public IEnumerable<Movie> GetAllMovies()
+        public IEnumerable<Manager> GetAllManagers()
         {
             try
             {
-                return _context.Movies;
+                return _context.Managers;
 
             }
             catch (Exception)
@@ -32,28 +32,16 @@ namespace MoviesAPI.Components
             }
         }
 
-        public IEnumerable<Movie> GetAllMovies(string title, string director, string gender, int? duration, Rate rate)
+        public IEnumerable<Manager> GetAllManagers(string name)
         {
             try
             {
-                IEnumerable<Movie> moviesList = _context.Movies;
+                IEnumerable<Manager> ManagersList = _context.Managers;
 
-                if (!string.IsNullOrEmpty(title))
-                    moviesList = moviesList.Where(movie => movie.Title.Contains(title));
+                if (!string.IsNullOrEmpty(name))
+                    ManagersList = ManagersList.Where(Manager => Manager.Name.Contains(name));
 
-                if (!string.IsNullOrEmpty(director))
-                    moviesList = moviesList.Where(movie => movie.Director.Contains(director));
-
-                if (!string.IsNullOrEmpty(gender))
-                    moviesList = moviesList.Where(movie => movie.Gender.Contains(gender));
-
-                if (duration != null && duration > 0)
-                    moviesList = moviesList.Where(movie => movie.Duration == duration);
-
-                if (rate != Rate.None)
-                    moviesList = moviesList.Where(movie => movie.MovieRate == rate);
-
-                return moviesList;
+                return ManagersList;
 
             }
             catch (Exception)
@@ -64,13 +52,13 @@ namespace MoviesAPI.Components
 
         #endregion
 
-        #region GetMovieById
+        #region GetManagerById
 
-        public Movie GetMovieById(int id)
+        public Manager GetManagerById(int id)
         {
             try
             {
-                return _context.Movies.FirstOrDefault(movie => movie.Id == id);
+                return _context.Managers.FirstOrDefault(Manager => Manager.Id == id);
 
             }
             catch (Exception)
@@ -81,18 +69,18 @@ namespace MoviesAPI.Components
 
         #endregion
 
-        #region AddMovie
+        #region AddManager
 
-        public void AddMovie(Movie movie)
+        public void AddManager(Manager Manager)
         {
             try
             {
-                _context.Movies.Add(movie);
+                _context.Managers.Add(Manager);
                 _context.SaveChanges();
             }
             catch (DbUpdateException)
             {
-                throw new DbUpdateException("An error ocurred when adding a new movie.");
+                throw new DbUpdateException("An error ocurred when adding a new manager.");
             }
             catch (Exception)
             {
@@ -102,18 +90,18 @@ namespace MoviesAPI.Components
 
         #endregion
 
-        #region UpdateMovie
+        #region UpdateManager
 
-        public void UpdateMovie(Movie movie)
+        public void UpdateManager(Manager Manager)
         {
             try
             {
-                _context.Movies.Update(movie);
+                _context.Managers.Update(Manager);
                 _context.SaveChanges();
             }
             catch (DbUpdateException)
             {
-                throw new DbUpdateException("An error ocurred when updating the movie.");
+                throw new DbUpdateException("An error ocurred when updating the manager.");
             }
             catch (Exception)
             {
@@ -123,23 +111,23 @@ namespace MoviesAPI.Components
 
         #endregion
 
-        #region DeleteMovie
+        #region DeleteManager
 
-        public void DeleteMovie(int id)
+        public void DeleteManager(int id)
         {
             try
             {
-                Movie movie = GetMovieById(id);
+                Manager Manager = GetManagerById(id);
 
-                if (movie == null)
+                if (Manager == null)
                     throw new DbUpdateException();
 
-                _context.Movies.Remove(movie);
+                _context.Managers.Remove(Manager);
                 _context.SaveChanges();
             }
             catch (DbUpdateException)
             {
-                throw new DbUpdateException("An error ocurred when removing the movie.");
+                throw new DbUpdateException("An error ocurred when removing the manager.");
             }
             catch (Exception)
             {

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoviesAPI.Components;
 using MoviesAPI.Data;
-using MoviesAPI.Data.Dtos.Address;
+using MoviesAPI.Data.Dtos.Session;
 using MoviesAPI.Interfaces;
 using MoviesAPI.Models;
 using System;
@@ -12,27 +12,26 @@ namespace MoviesAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class AddressController : ControllerBase
+    public class SessionController : ControllerBase
     {
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
-        private readonly IAddress _addressInterface;
-
-        public AddressController(AppDbContext context, IMapper mapper)
+        private readonly ISession _sessionInterface;
+        public SessionController(AppDbContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
-            _addressInterface = new AddressComponent(context);
+            _sessionInterface = new SessionComponent(context);
         }
 
-        #region GetAddress
+        #region GetSession
 
         [HttpGet]
-        public IActionResult GetAllAddresses()
+        public IActionResult GetAllSessions()
         {
             try
             {
-                return Ok(_addressInterface.GetAllAddress());
+                return Ok(_sessionInterface.GetAllSession());
             }
             catch (Exception message)
             {
@@ -42,22 +41,22 @@ namespace MoviesAPI.Controllers
 
         #endregion
 
-        #region GetAddressById
+        #region GetSessionById
 
-        [HttpGet ("{id}")]
-        public IActionResult GetAddressById(int id)
+        [HttpGet("{id}")]
+        public IActionResult GetSessionById(int id)
         {
             try
             {
-                Address address = _addressInterface.GetAddressById(id);
+                Session session = _sessionInterface.GetSessionById(id);
 
-                if (address != null)
+                if (session != null)
                 {
-                    ReadAddressDto readMovie = _mapper.Map<ReadAddressDto>(address);
+                    ReadSessionDto readMovie = _mapper.Map<ReadSessionDto>(session);
                     return Ok(readMovie);
                 }
 
-                return NotFound(new { Message = "Informed address doesn't exist or wasn't found." });
+                return NotFound(new { Message = "Informed Session doesn't exist or wasn't found." });
             }
             catch (Exception message)
             {
@@ -67,16 +66,16 @@ namespace MoviesAPI.Controllers
 
         #endregion
 
-        #region AddAddress
+        #region AddSession
 
         [HttpPost]
-        public IActionResult AddAddress([FromBody] CreateAddressDto newMovie)
+        public IActionResult AddSession(CreateSessionDto SessionDto)
         {
             try
             {
-                Address address = _mapper.Map<Address>(newMovie);
-                _addressInterface.AddAddress(address);
-                return CreatedAtAction(nameof(GetAddressById), new { address.Id }, address);
+                Session session = _mapper.Map<Session>(SessionDto);
+                _sessionInterface.AddSession(session);
+                return CreatedAtAction(nameof(GetSessionById), new { session.Id }, session);
             }
             catch (DbUpdateException message)
             {
@@ -90,17 +89,17 @@ namespace MoviesAPI.Controllers
 
         #endregion
 
-        #region UpdateAddress
+        #region UpdateSession
 
         [HttpPut("{id}")]
-        public IActionResult UpdateMovie(int id, [FromBody] UpdateAddressDto updateMovie)
+        public IActionResult UpdateMovie(int id, [FromBody] UpdateSessionDto updateMovie)
         {
             try
             {
-                Address address = _addressInterface.GetAddressById(id);
-                _mapper.Map(updateMovie, address);
-                _addressInterface.UpdateAddress(address);
-                return Ok(new {Message = "Address successfully updated." });
+                Session session = _sessionInterface.GetSessionById(id);
+                _mapper.Map(updateMovie, session);
+                _sessionInterface.UpdateSession(session);
+                return Ok(new { Message = "Session successfully updated." });
             }
             catch (DbUpdateException message)
             {
@@ -114,15 +113,15 @@ namespace MoviesAPI.Controllers
 
         #endregion
 
-        #region DeleteAddress
+        #region DeleteSession
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteAddress(int id)
+        public IActionResult DeleteSession(int id)
         {
             try
             {
-                _addressInterface.DeleteAddress(id);
-                return Ok(new { Message = "Address successfully deleted." });
+                _sessionInterface.DeleteSession(id);
+                return Ok(new { Message = "Session successfully deleted." });
             }
             catch (DbUpdateException message)
             {
@@ -135,6 +134,5 @@ namespace MoviesAPI.Controllers
         }
 
         #endregion
-
     }
 }

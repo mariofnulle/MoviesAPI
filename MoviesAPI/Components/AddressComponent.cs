@@ -77,11 +77,11 @@ namespace MoviesAPI.Components
 
         #region AddAddress
 
-        public void AddAddress(Address Address)
+        public void AddAddress(Address address)
         {
             try
             {
-                _context.Addresses.Add(Address);
+                _context.Addresses.Add(address);
                 _context.SaveChanges();
             }
             catch (DbUpdateException)
@@ -98,11 +98,11 @@ namespace MoviesAPI.Components
 
         #region UpdateAddress
 
-        public void UpdateAddress(Address Address)
+        public void UpdateAddress(Address address)
         {
             try
             {
-                _context.Addresses.Update(Address);
+                _context.Addresses.Update(address);
                 _context.SaveChanges();
             }
             catch (DbUpdateException)
@@ -123,12 +123,12 @@ namespace MoviesAPI.Components
         {
             try
             {
-                Address Address = GetAddressById(id);
+                Address address = GetAddressById(id);
 
-                if (Address == null)
+                if (address == null)
                     throw new DbUpdateException();
 
-                _context.Addresses.Remove(Address);
+                _context.Addresses.Remove(address);
                 _context.SaveChanges();
             }
             catch (DbUpdateException)

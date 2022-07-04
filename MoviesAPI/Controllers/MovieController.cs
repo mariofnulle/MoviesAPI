@@ -28,11 +28,26 @@ namespace MoviesAPI.Controllers
         #region GetMovie
 
         [HttpGet]
+        [Route("all")]
         public IActionResult GetAllMovies()
         {
             try
             {
                 return Ok(_movieInterface.GetAllMovies());
+            }
+            catch (Exception message)
+            {
+                return StatusCode(500, message.Message);
+            }
+        }
+
+        [HttpGet]
+        public IActionResult GetAllMovies([FromQuery] string title, [FromQuery] string director,
+                                          [FromQuery] string gender, [FromQuery] int? duration, [FromQuery] Rate rate = Rate.None)
+        {
+            try
+            {
+                return Ok(_movieInterface.GetAllMovies(title, director, gender, duration, rate));
             }
             catch (Exception message)
             {
@@ -54,7 +69,6 @@ namespace MoviesAPI.Controllers
                 if (movie != null)
                 {
                     ReadMovieDto readMovie = _mapper.Map<ReadMovieDto>(movie);
-                    readMovie.LookupDate = DateTime.Now;
                     return Ok(readMovie);
                 }
 

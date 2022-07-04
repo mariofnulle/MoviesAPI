@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MoviesAPI.Data.Dtos.MovieTheather;
 using MoviesAPI.Models;
+using System.Linq;
 
 namespace MoviesAPI.Profiles
 {

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoviesAPI.Components;
 using MoviesAPI.Data;
-using MoviesAPI.Data.Dtos.Address;
+using MoviesAPI.Data.Dtos.Manager;
 using MoviesAPI.Interfaces;
 using MoviesAPI.Models;
 using System;
@@ -12,27 +12,27 @@ namespace MoviesAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class AddressController : ControllerBase
+    public class ManagerController : ControllerBase
     {
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
-        private readonly IAddress _addressInterface;
+        private readonly IManager _managerInterface;
 
-        public AddressController(AppDbContext context, IMapper mapper)
+        public ManagerController(AppDbContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
-            _addressInterface = new AddressComponent(context);
+            _managerInterface = new ManagerComponent(context);
         }
 
-        #region GetAddress
+        #region GetManager
 
         [HttpGet]
-        public IActionResult GetAllAddresses()
+        public IActionResult GetAllManagers()
         {
             try
             {
-                return Ok(_addressInterface.GetAllAddress());
+                return Ok(_managerInterface.GetAllManagers());
             }
             catch (Exception message)
             {
@@ -42,22 +42,22 @@ namespace MoviesAPI.Controllers
 
         #endregion
 
-        #region GetAddressById
+        #region GetManagerById
 
-        [HttpGet ("{id}")]
-        public IActionResult GetAddressById(int id)
+        [HttpGet("{id}")]
+        public IActionResult GetManagerById(int id)
         {
             try
             {
-                Address address = _addressInterface.GetAddressById(id);
+                Manager Manager = _managerInterface.GetManagerById(id);
 
-                if (address != null)
+                if (Manager != null)
                 {
-                    ReadAddressDto readMovie = _mapper.Map<ReadAddressDto>(address);
+                    ReadManagerDto readMovie = _mapper.Map<ReadManagerDto>(Manager);
                     return Ok(readMovie);
                 }
 
-                return NotFound(new { Message = "Informed address doesn't exist or wasn't found." });
+                return NotFound(new { Message = "Informed manager doesn't exist or wasn't found." });
             }
             catch (Exception message)
             {
@@ -67,16 +67,16 @@ namespace MoviesAPI.Controllers
 
         #endregion
 
-        #region AddAddress
+        #region AddManager
 
         [HttpPost]
-        public IActionResult AddAddress([FromBody] CreateAddressDto newMovie)
+        public IActionResult AddManager(CreateManagerDto managerDto)
         {
             try
             {
-                Address address = _mapper.Map<Address>(newMovie);
-                _addressInterface.AddAddress(address);
-                return CreatedAtAction(nameof(GetAddressById), new { address.Id }, address);
+                Manager manager = _mapper.Map<Manager>(managerDto);
+                _managerInterface.AddManager(manager);
+                return CreatedAtAction(nameof(GetManagerById), new { manager.Id }, manager);
             }
             catch (DbUpdateException message)
             {
@@ -90,17 +90,17 @@ namespace MoviesAPI.Controllers
 
         #endregion
 
-        #region UpdateAddress
+        #region UpdateManager
 
         [HttpPut("{id}")]
-        public IActionResult UpdateMovie(int id, [FromBody] UpdateAddressDto updateMovie)
+        public IActionResult UpdateMovie(int id, [FromBody] UpdateManagerDto updateMovie)
         {
             try
             {
-                Address address = _addressInterface.GetAddressById(id);
-                _mapper.Map(updateMovie, address);
-                _addressInterface.UpdateAddress(address);
-                return Ok(new {Message = "Address successfully updated." });
+                Manager Manager = _managerInterface.GetManagerById(id);
+                _mapper.Map(updateMovie, Manager);
+                _managerInterface.UpdateManager(Manager);
+                return Ok(new { Message = "Manager successfully updated." });
             }
             catch (DbUpdateException message)
             {
@@ -114,15 +114,15 @@ namespace MoviesAPI.Controllers
 
         #endregion
 
-        #region DeleteAddress
+        #region DeleteManager
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteAddress(int id)
+        public IActionResult DeleteManager(int id)
         {
             try
             {
-                _addressInterface.DeleteAddress(id);
-                return Ok(new { Message = "Address successfully deleted." });
+                _managerInterface.DeleteManager(id);
+                return Ok(new { Message = "Manager successfully deleted." });
             }
             catch (DbUpdateException message)
             {
@@ -135,6 +135,5 @@ namespace MoviesAPI.Controllers
         }
 
         #endregion
-
     }
 }
