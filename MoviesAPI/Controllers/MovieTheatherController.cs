@@ -28,11 +28,25 @@ namespace MoviesAPI.Controllers
         #region GetMovieTheather
 
         [HttpGet]
+        [Route("all")]
         public IActionResult GetAllMovieTheathers()
         {
             try
             {
                 return Ok(_movieTheatherInterface.GetAllMovieTheathers());
+            }
+            catch (Exception message)
+            {
+                return StatusCode(500, message.Message);
+            }
+        }
+
+        [HttpGet]
+        public IActionResult GetAllMovieTheathers(string movieName)
+        {
+            try
+            {
+                return Ok(_movieTheatherInterface.GetAllMovieTheathers(movieName));
             }
             catch (Exception message)
             {

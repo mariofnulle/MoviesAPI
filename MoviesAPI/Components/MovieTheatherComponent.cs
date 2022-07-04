@@ -32,14 +32,19 @@ namespace MoviesAPI.Components
             }
         }
 
-        public IEnumerable<MovieTheather> GetAllMovieTheathers(string name)
+        public IEnumerable<MovieTheather> GetAllMovieTheathers(string movieName)
         {
             try
             {
                 IEnumerable<MovieTheather> MovieTheathersList = _context.MovieTheathers;
 
-                if (!string.IsNullOrEmpty(name))
-                    MovieTheathersList = MovieTheathersList.Where(MovieTheather => MovieTheather.Name.Contains(name));
+                if (MovieTheathersList != null && !string.IsNullOrEmpty(movieName))
+                {
+                    MovieTheathersList = from theather in MovieTheathersList
+                                         where theather.Sessions.Any(session =>
+                                         session.Movie.Title.Contains(movieName))
+                                         select theather;
+                }
 
                 return MovieTheathersList;
 
