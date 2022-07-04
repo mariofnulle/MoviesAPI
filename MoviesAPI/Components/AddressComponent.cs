@@ -8,22 +8,22 @@ using System.Linq;
 
 namespace MoviesAPI.Components
 {
-    public class MovieComponent : IMovie
+    public class AddressComponent : IAddress
     {
         private readonly AppDbContext _context;
 
-        public MovieComponent(AppDbContext context)
+        public AddressComponent(AppDbContext context)
         {
             _context = context;
         }
 
-        #region GetAllMovies
+        #region GetAllAddress
 
-        public IEnumerable<Movie> GetAllMovies()
+        public IEnumerable<Address> GetAllAddress()
         {
             try
             {
-                return _context.Movies;
+                return _context.Addresses;
 
             }
             catch (Exception)
@@ -32,45 +32,22 @@ namespace MoviesAPI.Components
             }
         }
 
-        public IEnumerable<Movie> GetAllMovies(string title, string director, string gender, int? duration, Rate rate)
+        public IEnumerable<Address> GetAllAddress(string addressName, string neighbordhood, int? number)
         {
             try
             {
-                IEnumerable<Movie> moviesList = _context.Movies;
+                IEnumerable<Address> AddressesList = _context.Addresses;
 
-                if (!string.IsNullOrEmpty(title))
-                    moviesList = moviesList.Where(movie => movie.Title.Contains(title));
+                if (!string.IsNullOrEmpty(addressName))
+                    AddressesList = AddressesList.Where(Address => Address.AddressName.Contains(addressName));
 
-                if (!string.IsNullOrEmpty(director))
-                    moviesList = moviesList.Where(movie => movie.Director.Contains(director));
+                if (!string.IsNullOrEmpty(neighbordhood))
+                    AddressesList = AddressesList.Where(Address => Address.Neighborhood.Contains(neighbordhood));
 
-                if (!string.IsNullOrEmpty(gender))
-                    moviesList = moviesList.Where(movie => movie.Gender.Contains(gender));
+                if (number != null && number > 0)
+                    AddressesList = AddressesList.Where(Address => Address.Number == number);
 
-                if (duration != null && duration > 0)
-                    moviesList = moviesList.Where(movie => movie.Duration == duration);
-
-                if (rate != Rate.None)
-                    moviesList = moviesList.Where(movie => movie.MovieRate == rate);
-
-                return moviesList;
-
-            }
-            catch (Exception)
-            {
-                throw new Exception("The system encountered an error and the operation was canceled, contact your administrator.");
-            }
-        }
-
-        #endregion
-
-        #region GetMovieById
-
-        public Movie GetMovieById(int id)
-        {
-            try
-            {
-                return _context.Movies.FirstOrDefault(movie => movie.Id == id);
+                return AddressesList;
 
             }
             catch (Exception)
@@ -81,18 +58,35 @@ namespace MoviesAPI.Components
 
         #endregion
 
-        #region AddMovie
+        #region GetAddressById
 
-        public void AddMovie(Movie movie)
+        public Address GetAddressById(int id)
         {
             try
             {
-                _context.Movies.Add(movie);
+                return _context.Addresses.FirstOrDefault(Address => Address.Id == id);
+
+            }
+            catch (Exception)
+            {
+                throw new Exception("The system encountered an error and the operation was canceled, contact your administrator.");
+            }
+        }
+
+        #endregion
+
+        #region AddAddress
+
+        public void AddAddress(Address address)
+        {
+            try
+            {
+                _context.Addresses.Add(address);
                 _context.SaveChanges();
             }
             catch (DbUpdateException)
             {
-                throw new DbUpdateException("An error ocurred when adding a new movie.");
+                throw new DbUpdateException("An error ocurred when adding a new Address.");
             }
             catch (Exception)
             {
@@ -102,18 +96,18 @@ namespace MoviesAPI.Components
 
         #endregion
 
-        #region UpdateMovie
+        #region UpdateAddress
 
-        public void UpdateMovie(Movie movie)
+        public void UpdateAddress(Address address)
         {
             try
             {
-                _context.Movies.Update(movie);
+                _context.Addresses.Update(address);
                 _context.SaveChanges();
             }
             catch (DbUpdateException)
             {
-                throw new DbUpdateException("An error ocurred when updating the movie.");
+                throw new DbUpdateException("An error ocurred when updating the Address.");
             }
             catch (Exception)
             {
@@ -123,23 +117,23 @@ namespace MoviesAPI.Components
 
         #endregion
 
-        #region DeleteMovie
+        #region DeleteAddress
 
-        public void DeleteMovie(int id)
+        public void DeleteAddress(int id)
         {
             try
             {
-                Movie movie = GetMovieById(id);
+                Address address = GetAddressById(id);
 
-                if (movie == null)
+                if (address == null)
                     throw new DbUpdateException();
 
-                _context.Movies.Remove(movie);
+                _context.Addresses.Remove(address);
                 _context.SaveChanges();
             }
             catch (DbUpdateException)
             {
-                throw new DbUpdateException("An error ocurred when removing the movie.");
+                throw new DbUpdateException("An error ocurred when removing the Address.");
             }
             catch (Exception)
             {

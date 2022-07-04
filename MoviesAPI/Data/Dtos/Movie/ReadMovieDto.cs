@@ -1,9 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using MoviesAPI.Models;
+using System;
+using System.ComponentModel.DataAnnotations;
 
-namespace MoviesAPI.Data.Dtos
+namespace MoviesAPI.Data.Dtos.Movie
 {
-    public class UpdateMovieDto
+    public class ReadMovieDto
     {
+        [Key]
+        [Required]
+        public int Id { get; set; }
         [Required(ErrorMessage = "Title is required.")]
         public string Title { get; set; }
         [Required(ErrorMessage = "Director is required.")]
@@ -12,5 +17,6 @@ namespace MoviesAPI.Data.Dtos
         public string Gender { get; set; }
         [Range(1, 600, ErrorMessage = "Minimum duration is 1 minute and maximum duration is 600 minutes.")]
         public int Duration { get; set; }
+        public Rate MovieRate { get; set; }
     }
 }
