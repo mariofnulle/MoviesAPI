@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FluentResults;
+using Microsoft.EntityFrameworkCore;
 using MoviesAPI.Data;
 using MoviesAPI.Interfaces;
 using MoviesAPI.Models;
@@ -19,11 +20,11 @@ namespace MoviesAPI.Components
 
         #region GetAllMovieTheathers
 
-        public IEnumerable<MovieTheather> GetAllMovieTheathers()
+        public List<MovieTheather> GetAllMovieTheathers()
         {
             try
             {
-                return _context.MovieTheathers;
+                return _context.MovieTheathers.ToList();
 
             }
             catch (Exception)
@@ -32,7 +33,7 @@ namespace MoviesAPI.Components
             }
         }
 
-        public IEnumerable<MovieTheather> GetAllMovieTheathers(string movieName)
+        public List<MovieTheather> GetAllMovieTheathers(string movieName)
         {
             try
             {
@@ -46,7 +47,7 @@ namespace MoviesAPI.Components
                                          select theather;
                 }
 
-                return MovieTheathersList;
+                return MovieTheathersList.ToList();
 
             }
             catch (Exception)
@@ -118,17 +119,19 @@ namespace MoviesAPI.Components
 
         #region DeleteMovieTheather
 
-        public void DeleteMovieTheather(int id)
+        public Result DeleteMovieTheather(int id)
         {
             try
             {
                 MovieTheather MovieTheather = GetMovieTheatherById(id);
 
                 if (MovieTheather == null)
-                    throw new DbUpdateException();
+                    return Result.Fail("Movie theather doesn't exist or wasn't found.");
 
                 _context.MovieTheathers.Remove(MovieTheather);
                 _context.SaveChanges();
+
+                return Result.Ok();
             }
             catch (DbUpdateException)
             {

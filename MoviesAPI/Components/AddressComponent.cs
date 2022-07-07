@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FluentResults;
+using Microsoft.EntityFrameworkCore;
 using MoviesAPI.Data;
 using MoviesAPI.Interfaces;
 using MoviesAPI.Models;
@@ -19,11 +20,11 @@ namespace MoviesAPI.Components
 
         #region GetAllAddress
 
-        public IEnumerable<Address> GetAllAddress()
+        public List<Address> GetAllAddress()
         {
             try
             {
-                return _context.Addresses;
+                return _context.Addresses.ToList();
 
             }
             catch (Exception)
@@ -32,7 +33,7 @@ namespace MoviesAPI.Components
             }
         }
 
-        public IEnumerable<Address> GetAllAddress(string addressName, string neighbordhood, int? number)
+        public List<Address> GetAllAddress(string addressName, string neighbordhood, int? number)
         {
             try
             {
@@ -47,7 +48,7 @@ namespace MoviesAPI.Components
                 if (number != null && number > 0)
                     AddressesList = AddressesList.Where(Address => Address.Number == number);
 
-                return AddressesList;
+                return AddressesList.ToList();
 
             }
             catch (Exception)
@@ -119,17 +120,19 @@ namespace MoviesAPI.Components
 
         #region DeleteAddress
 
-        public void DeleteAddress(int id)
+        public Result DeleteAddress(int id)
         {
             try
             {
                 Address address = GetAddressById(id);
 
                 if (address == null)
-                    throw new DbUpdateException();
+                    return Result.Fail("Address doesn't exist or wasn't found.");
 
                 _context.Addresses.Remove(address);
                 _context.SaveChanges();
+
+                return Result.Ok();
             }
             catch (DbUpdateException)
             {

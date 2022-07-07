@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FluentResults;
+using Microsoft.EntityFrameworkCore;
 using MoviesAPI.Data;
 using MoviesAPI.Interfaces;
 using MoviesAPI.Models;
@@ -19,11 +20,11 @@ namespace MoviesAPI.Components
 
         #region GetAllMovies
 
-        public IEnumerable<Movie> GetAllMovies()
+        public List<Movie> GetAllMovies()
         {
             try
             {
-                return _context.Movies;
+                return _context.Movies.ToList();
 
             }
             catch (Exception)
@@ -32,7 +33,7 @@ namespace MoviesAPI.Components
             }
         }
 
-        public IEnumerable<Movie> GetAllMovies(string title, string director, string gender, int? duration, Rate rate)
+        public List<Movie> GetAllMovies(string title, string director, string gender, int? duration, Rate rate)
         {
             try
             {
@@ -53,7 +54,7 @@ namespace MoviesAPI.Components
                 if (rate != Rate.None)
                     moviesList = moviesList.Where(movie => movie.MovieRate == rate);
 
-                return moviesList;
+                return moviesList.ToList();
 
             }
             catch (Exception)
@@ -125,17 +126,19 @@ namespace MoviesAPI.Components
 
         #region DeleteMovie
 
-        public void DeleteMovie(int id)
+        public Result DeleteMovie(int id)
         {
             try
             {
                 Movie movie = GetMovieById(id);
 
                 if (movie == null)
-                    throw new DbUpdateException();
+                    return Result.Fail("Movie doesn't exist or wasn't found.");
 
                 _context.Movies.Remove(movie);
                 _context.SaveChanges();
+
+                return Result.Ok();
             }
             catch (DbUpdateException)
             {
