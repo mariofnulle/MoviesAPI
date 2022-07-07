@@ -1,12 +1,12 @@
-﻿using AutoMapper;
+﻿using FluentResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MoviesAPI.Components;
-using MoviesAPI.Data;
 using MoviesAPI.Data.Dtos.MovieTheather;
-using MoviesAPI.Interfaces;
 using MoviesAPI.Models;
+using MoviesAPI.Services.ServicesInterfaces;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MoviesAPI.Controllers
 {
@@ -14,15 +14,11 @@ namespace MoviesAPI.Controllers
     [Route("[controller]")]
     public class MovieTheatherController : ControllerBase
     {
-        private readonly AppDbContext _context;
-        private readonly IMapper _mapper;
-        private readonly IMovieTheather _movieTheatherInterface;
+        private readonly IMovieTheatherService _movieTheatherService;
 
-        public MovieTheatherController(AppDbContext context, IMapper mapper)
+        public MovieTheatherController(IMovieTheatherService movieTheatherService)
         {
-            _context = context;
-            _mapper = mapper;
-            _movieTheatherInterface = new MovieTheatherComponent(context);
+            _movieTheatherService = movieTheatherService;
         }
 
         #region GetMovieTheather
@@ -33,7 +29,12 @@ namespace MoviesAPI.Controllers
         {
             try
             {
-                return Ok(_movieTheatherInterface.GetAllMovieTheathers());
+                List<MovieTheather> movieTheathers = _movieTheatherService.GetAllMovieTheathers();
+
+                if(movieTheathers.Count > 0)
+                    return Ok(movieTheathers);
+
+                return NotFound("There isn't any movie theathers registered");
             }
             catch (Exception message)
             {
@@ -46,7 +47,12 @@ namespace MoviesAPI.Controllers
         {
             try
             {
-                return Ok(_movieTheatherInterface.GetAllMovieTheathers(movieName));
+                List<MovieTheather> movieTheathers = _movieTheatherService.GetAllMovieTheathers(movieName);
+
+                if (movieTheathers.Count > 0)
+                    return Ok(movieTheathers);
+
+                return NotFound("There isn't any movie theathers registered within filter criteria");
             }
             catch (Exception message)
             {
@@ -63,13 +69,10 @@ namespace MoviesAPI.Controllers
         {
             try
             {
-                MovieTheather movieTheather = _movieTheatherInterface.GetMovieTheatherById(id);
+                ReadMovieTheatherDto movieTheather = _movieTheatherService.GetMovieTheatherById(id);
 
                 if (movieTheather != null)
-                {
-                    ReadMovieTheatherDto readMovie = _mapper.Map<ReadMovieTheatherDto>(movieTheather);
-                    return Ok(readMovie);
-                }
+                    return Ok(movieTheather);
 
                 return NotFound(new { Message = "Informed movie theather doesn't exist or wasn't found." });
             }
@@ -88,8 +91,7 @@ namespace MoviesAPI.Controllers
         {
             try
             {
-                MovieTheather movieTheather = _mapper.Map<MovieTheather>(newMovie);
-                _movieTheatherInterface.AddMovieTheather(movieTheather);
+                ReadMovieTheatherDto movieTheather = _movieTheatherService.AddMovieTheather(newMovie);
                 return CreatedAtAction(nameof(GetMovieTheatherById), new { movieTheather.Id }, movieTheather);
             }
             catch (DbUpdateException message)
@@ -111,9 +113,11 @@ namespace MoviesAPI.Controllers
         {
             try
             {
-                MovieTheather movieTheather = _movieTheatherInterface.GetMovieTheatherById(id);
-                _mapper.Map(updateMovie, movieTheather);
-                _movieTheatherInterface.UpdateMovieTheather(movieTheather);
+                Result result = _movieTheatherService.UpdateMovieTheather(id, updateMovie);
+
+                if (result.IsFailed)
+                    return NotFound(result.Errors.FirstOrDefault(error => !string.IsNullOrEmpty(error.Message)).Message);
+
                 return Ok(new {Message = "Movie theather successfully updated." });
             }
             catch (DbUpdateException message)
@@ -135,7 +139,11 @@ namespace MoviesAPI.Controllers
         {
             try
             {
-                _movieTheatherInterface.DeleteMovieTheather(id);
+                Result result = _movieTheatherService.DeleteMovieTheather(id);
+
+                if (result.IsFailed)
+                    return NotFound(result.Errors.FirstOrDefault(error => !string.IsNullOrEmpty(error.Message)).Message);
+
                 return Ok(new { Message = "Movie theather successfully deleted." });
             }
             catch (DbUpdateException message)

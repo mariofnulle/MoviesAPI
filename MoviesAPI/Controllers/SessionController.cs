@@ -1,12 +1,12 @@
-﻿using AutoMapper;
+﻿using FluentResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MoviesAPI.Components;
-using MoviesAPI.Data;
 using MoviesAPI.Data.Dtos.Session;
-using MoviesAPI.Interfaces;
 using MoviesAPI.Models;
+using MoviesAPI.Services.ServicesInterfaces;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MoviesAPI.Controllers
 {
@@ -14,24 +14,44 @@ namespace MoviesAPI.Controllers
     [Route("[controller]")]
     public class SessionController : ControllerBase
     {
-        private readonly AppDbContext _context;
-        private readonly IMapper _mapper;
-        private readonly ISession _sessionInterface;
-        public SessionController(AppDbContext context, IMapper mapper)
+        private readonly ISessionService _sessionService;
+        public SessionController(ISessionService sessionService)
         {
-            _context = context;
-            _mapper = mapper;
-            _sessionInterface = new SessionComponent(context);
+            _sessionService = sessionService;
         }
 
         #region GetSession
 
         [HttpGet]
+        [Route("all")]
         public IActionResult GetAllSessions()
         {
             try
             {
-                return Ok(_sessionInterface.GetAllSession());
+                List<Session> session = _sessionService.GetAllSessions();
+
+                if(session.Count > 0)
+                    return Ok(session);
+
+                return NotFound("There isn't any sessions registered.");
+            }
+            catch (Exception message)
+            {
+                return StatusCode(500, message.Message);
+            }
+        }
+
+        [HttpGet]
+        public IActionResult GetAllSessions(int? theatherId, int? movieId)
+        {
+            try
+            {
+                List<Session> session = _sessionService.GetAllSessions(theatherId, movieId);
+
+                if (session.Count > 0)
+                    return Ok(session);
+
+                return NotFound("There isn't any sessions registered.");
             }
             catch (Exception message)
             {
@@ -48,13 +68,10 @@ namespace MoviesAPI.Controllers
         {
             try
             {
-                Session session = _sessionInterface.GetSessionById(id);
+                ReadSessionDto session = _sessionService.GetSessionById(id);
 
                 if (session != null)
-                {
-                    ReadSessionDto readMovie = _mapper.Map<ReadSessionDto>(session);
-                    return Ok(readMovie);
-                }
+                    return Ok(session);
 
                 return NotFound(new { Message = "Informed Session doesn't exist or wasn't found." });
             }
@@ -69,12 +86,11 @@ namespace MoviesAPI.Controllers
         #region AddSession
 
         [HttpPost]
-        public IActionResult AddSession(CreateSessionDto SessionDto)
+        public IActionResult AddSession(CreateSessionDto sessionDto)
         {
             try
             {
-                Session session = _mapper.Map<Session>(SessionDto);
-                _sessionInterface.AddSession(session);
+                ReadSessionDto session = _sessionService.AddSession(sessionDto);
                 return CreatedAtAction(nameof(GetSessionById), new { session.Id }, session);
             }
             catch (DbUpdateException message)
@@ -92,13 +108,15 @@ namespace MoviesAPI.Controllers
         #region UpdateSession
 
         [HttpPut("{id}")]
-        public IActionResult UpdateMovie(int id, [FromBody] UpdateSessionDto updateMovie)
+        public IActionResult UpdateMovie(int id, [FromBody] UpdateSessionDto updateSession)
         {
             try
             {
-                Session session = _sessionInterface.GetSessionById(id);
-                _mapper.Map(updateMovie, session);
-                _sessionInterface.UpdateSession(session);
+                Result result = _sessionService.UpdateSession(id, updateSession);
+
+                if (result.IsFailed)
+                    return NotFound(result.Errors.FirstOrDefault(error => !string.IsNullOrEmpty(error.Message)).Message);
+
                 return Ok(new { Message = "Session successfully updated." });
             }
             catch (DbUpdateException message)
@@ -120,7 +138,11 @@ namespace MoviesAPI.Controllers
         {
             try
             {
-                _sessionInterface.DeleteSession(id);
+                Result result = _sessionService.DeleteSession(id);
+
+                if (result.IsFailed)
+                    return NotFound(result.Errors.FirstOrDefault(error => !string.IsNullOrEmpty(error.Message)).Message);
+
                 return Ok(new { Message = "Session successfully deleted." });
             }
             catch (DbUpdateException message)

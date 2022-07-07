@@ -1,12 +1,12 @@
-﻿using AutoMapper;
+﻿using FluentResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MoviesAPI.Components;
-using MoviesAPI.Data;
 using MoviesAPI.Data.Dtos.Movie;
-using MoviesAPI.Interfaces;
 using MoviesAPI.Models;
+using MoviesAPI.Services.ServicesInterfaces;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MoviesAPI.Controllers
 {
@@ -14,15 +14,11 @@ namespace MoviesAPI.Controllers
     [Route("[controller]")]
     public class MovieController : ControllerBase
     {
-        private readonly AppDbContext _context;
-        private readonly IMapper _mapper;
-        private readonly IMovie _movieInterface;
+        private readonly IMovieService _movieService;
 
-        public MovieController(AppDbContext context, IMapper mapper)
+        public MovieController(IMovieService movieService)
         {
-            _context = context;
-            _mapper = mapper;
-            _movieInterface = new MovieComponent(context);
+            _movieService = movieService;
         }
 
         #region GetMovie
@@ -33,7 +29,12 @@ namespace MoviesAPI.Controllers
         {
             try
             {
-                return Ok(_movieInterface.GetAllMovies());
+                List<Movie> movies = _movieService.GetAllMovies();
+
+                if (movies.Count > 0)
+                    return Ok(movies);
+
+                return NotFound("There isn't any movies registered.");
             }
             catch (Exception message)
             {
@@ -47,7 +48,12 @@ namespace MoviesAPI.Controllers
         {
             try
             {
-                return Ok(_movieInterface.GetAllMovies(title, director, gender, duration, rate));
+                List<Movie> movies = _movieService.GetAllMovies(title, director, gender, duration, rate);
+
+                if (movies.Count > 0)
+                    return Ok(movies);
+
+                return NotFound("There isn't any movies registered within the filter criteria.");
             }
             catch (Exception message)
             {
@@ -64,13 +70,10 @@ namespace MoviesAPI.Controllers
         {
             try
             {
-                Movie movie = _movieInterface.GetMovieById(id);
+                ReadMovieDto readMovie = _movieService.GetMovieById(id);
 
-                if (movie != null)
-                {
-                    ReadMovieDto readMovie = _mapper.Map<ReadMovieDto>(movie);
+                if (readMovie != null)
                     return Ok(readMovie);
-                }
 
                 return NotFound(new { Message = "Informed movie doesn't exist or wasn't found." });
             }
@@ -89,9 +92,8 @@ namespace MoviesAPI.Controllers
         {
             try
             {
-                Movie movie = _mapper.Map<Movie>(newMovie);
-                _movieInterface.AddMovie(movie);
-                return CreatedAtAction(nameof(GetMovieById), new { movie.Id }, movie);
+                ReadMovieDto readDto = _movieService.AddMovie(newMovie);
+                return CreatedAtAction(nameof(GetMovieById), new { readDto.Id }, readDto);
             }
             catch (DbUpdateException message)
             {
@@ -112,9 +114,11 @@ namespace MoviesAPI.Controllers
         {
             try
             {
-                Movie movie = _movieInterface.GetMovieById(id);
-                _mapper.Map(updateMovie, movie);
-                _movieInterface.UpdateMovie(movie);
+                Result result = _movieService.UpdateMovie(id, updateMovie);
+
+                if (result.IsFailed)
+                    return NotFound(result.Errors.FirstOrDefault(error => !string.IsNullOrEmpty(error.Message)).Message);
+
                 return Ok(new {Message = "Movie successfully updated." });
             }
             catch (DbUpdateException message)
@@ -136,7 +140,11 @@ namespace MoviesAPI.Controllers
         {
             try
             {
-                _movieInterface.DeleteMovie(id);
+                Result result = _movieService.DeleteMovie(id);
+
+                if (result.IsFailed)
+                    return NotFound(result.Errors.FirstOrDefault(error => !string.IsNullOrEmpty(error.Message)).Message);
+
                 return Ok(new { Message = "Movie successfully deleted." });
             }
             catch (DbUpdateException message)

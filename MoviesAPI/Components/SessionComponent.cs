@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FluentResults;
+using Microsoft.EntityFrameworkCore;
 using MoviesAPI.Data;
 using MoviesAPI.Interfaces;
 using MoviesAPI.Models;
@@ -19,11 +20,11 @@ namespace MoviesAPI.Components
 
         #region GetAllSession
 
-        public IEnumerable<Session> GetAllSession()
+        public List<Session> GetAllSessions()
         {
             try
             {
-                return _context.Sessions;
+                return _context.Sessions.ToList();
 
             }
             catch (Exception)
@@ -32,7 +33,7 @@ namespace MoviesAPI.Components
             }
         }
 
-        public IEnumerable<Session> GetAllSession(int? theatherId, int? movieId)
+        public List<Session> GetAllSessions(int? theatherId, int? movieId)
         {
             try
             {
@@ -44,7 +45,7 @@ namespace MoviesAPI.Components
                 if (movieId != null && movieId > 0)
                     sessionList = sessionList.Where(Session => Session.MovieId == movieId);
 
-                return sessionList;
+                return sessionList.ToList();
 
             }
             catch (Exception)
@@ -116,17 +117,19 @@ namespace MoviesAPI.Components
 
         #region DeleteSession
 
-        public void DeleteSession(int id)
+        public Result DeleteSession(int id)
         {
             try
             {
                 Session Session = GetSessionById(id);
 
                 if (Session == null)
-                    throw new DbUpdateException();
+                    return Result.Fail("Session doesn't exist or wasn't found.");
 
                 _context.Sessions.Remove(Session);
                 _context.SaveChanges();
+
+                return Result.Ok();
             }
             catch (DbUpdateException)
             {

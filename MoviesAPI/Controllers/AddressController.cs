@@ -1,12 +1,12 @@
-﻿using AutoMapper;
+﻿using FluentResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MoviesAPI.Components;
-using MoviesAPI.Data;
 using MoviesAPI.Data.Dtos.Address;
-using MoviesAPI.Interfaces;
 using MoviesAPI.Models;
+using MoviesAPI.Services.ServicesInterfaces;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MoviesAPI.Controllers
 {
@@ -14,25 +14,45 @@ namespace MoviesAPI.Controllers
     [Route("[controller]")]
     public class AddressController : ControllerBase
     {
-        private readonly AppDbContext _context;
-        private readonly IMapper _mapper;
-        private readonly IAddress _addressInterface;
+        private readonly IAddressService _addressService;
 
-        public AddressController(AppDbContext context, IMapper mapper)
+        public AddressController(IAddressService addressService)
         {
-            _context = context;
-            _mapper = mapper;
-            _addressInterface = new AddressComponent(context);
+            _addressService = addressService;
         }
 
         #region GetAddress
 
         [HttpGet]
-        public IActionResult GetAllAddresses()
+        [Route("all")]
+        public IActionResult GetAllAddress()
         {
             try
             {
-                return Ok(_addressInterface.GetAllAddress());
+                List<Address> address = _addressService.GetAllAddress();
+
+                if (address.Count > 0)
+                    return Ok(address);
+
+                return NotFound("There isn't any addresses registered.");
+            }
+            catch (Exception message)
+            {
+                return StatusCode(500, message.Message);
+            }
+        }
+
+        [HttpGet]
+        public IActionResult GetAllAddress(string addressName, string neighbordhood, int? number)
+        {
+            try
+            {
+                List<Address> address = _addressService.GetAllAddress(addressName,neighbordhood,number);
+
+                if (address.Count > 0)
+                    return Ok(address);
+
+                return NotFound("There isn't any addresses registered within the filter criteria.");
             }
             catch (Exception message)
             {
@@ -49,13 +69,10 @@ namespace MoviesAPI.Controllers
         {
             try
             {
-                Address address = _addressInterface.GetAddressById(id);
+                ReadAddressDto readAddress = _addressService.GetAddressById(id);
 
-                if (address != null)
-                {
-                    ReadAddressDto readMovie = _mapper.Map<ReadAddressDto>(address);
-                    return Ok(readMovie);
-                }
+                if (readAddress != null)
+                    return Ok(readAddress);
 
                 return NotFound(new { Message = "Informed address doesn't exist or wasn't found." });
             }
@@ -70,12 +87,11 @@ namespace MoviesAPI.Controllers
         #region AddAddress
 
         [HttpPost]
-        public IActionResult AddAddress([FromBody] CreateAddressDto newMovie)
+        public IActionResult AddAddress([FromBody] CreateAddressDto newAddress)
         {
             try
             {
-                Address address = _mapper.Map<Address>(newMovie);
-                _addressInterface.AddAddress(address);
+                ReadAddressDto address = _addressService.AddAddress(newAddress);
                 return CreatedAtAction(nameof(GetAddressById), new { address.Id }, address);
             }
             catch (DbUpdateException message)
@@ -93,13 +109,15 @@ namespace MoviesAPI.Controllers
         #region UpdateAddress
 
         [HttpPut("{id}")]
-        public IActionResult UpdateMovie(int id, [FromBody] UpdateAddressDto updateMovie)
+        public IActionResult UpdateMovie(int id, [FromBody] UpdateAddressDto updateAddress)
         {
             try
             {
-                Address address = _addressInterface.GetAddressById(id);
-                _mapper.Map(updateMovie, address);
-                _addressInterface.UpdateAddress(address);
+                Result result = _addressService.UpdateAddress(id, updateAddress);
+
+                if (result.IsFailed)
+                    return NotFound(result.Errors.FirstOrDefault(error => !string.IsNullOrEmpty(error.Message)).Message);
+
                 return Ok(new {Message = "Address successfully updated." });
             }
             catch (DbUpdateException message)
@@ -121,7 +139,11 @@ namespace MoviesAPI.Controllers
         {
             try
             {
-                _addressInterface.DeleteAddress(id);
+                Result result = _addressService.DeleteAddress(id);
+
+                if (result.IsFailed)
+                    return NotFound(result.Errors.FirstOrDefault(error => !string.IsNullOrEmpty(error.Message)).Message);
+
                 return Ok(new { Message = "Address successfully deleted." });
             }
             catch (DbUpdateException message)

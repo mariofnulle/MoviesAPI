@@ -5,7 +5,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using MoviesAPI.Components;
 using MoviesAPI.Data;
+using MoviesAPI.Interfaces;
+using MoviesAPI.Services;
 using System;
 
 namespace MoviesAPI
@@ -24,6 +27,9 @@ namespace MoviesAPI
         {
             services.AddDbContext<AppDbContext>(options => options.UseLazyLoadingProxies().UseSqlServer(Configuration.GetConnectionString("MovieConnection")));
             services.AddControllers();
+
+            ConfigurationServices.RegisterDependencies(services);
+            
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "MoviesAPI", Version = "v1" });

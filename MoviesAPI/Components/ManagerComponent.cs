@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FluentResults;
+using Microsoft.EntityFrameworkCore;
 using MoviesAPI.Data;
 using MoviesAPI.Interfaces;
 using MoviesAPI.Models;
@@ -19,11 +20,11 @@ namespace MoviesAPI.Components
 
         #region GetAllManagers
 
-        public IEnumerable<Manager> GetAllManagers()
+        public List<Manager> GetAllManagers()
         {
             try
             {
-                return _context.Managers;
+                return _context.Managers.ToList();
 
             }
             catch (Exception)
@@ -32,7 +33,7 @@ namespace MoviesAPI.Components
             }
         }
 
-        public IEnumerable<Manager> GetAllManagers(string name)
+        public List<Manager> GetAllManagers(string name)
         {
             try
             {
@@ -41,7 +42,7 @@ namespace MoviesAPI.Components
                 if (!string.IsNullOrEmpty(name))
                     ManagersList = ManagersList.Where(Manager => Manager.Name.Contains(name));
 
-                return ManagersList;
+                return ManagersList.ToList();
 
             }
             catch (Exception)
@@ -113,17 +114,19 @@ namespace MoviesAPI.Components
 
         #region DeleteManager
 
-        public void DeleteManager(int id)
+        public Result DeleteManager(int id)
         {
             try
             {
                 Manager Manager = GetManagerById(id);
 
                 if (Manager == null)
-                    throw new DbUpdateException();
+                    return Result.Fail("Manager doesn't exist or wasn't found.");
 
                 _context.Managers.Remove(Manager);
                 _context.SaveChanges();
+
+                return Result.Ok();
             }
             catch (DbUpdateException)
             {

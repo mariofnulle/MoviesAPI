@@ -11,6 +11,7 @@ namespace MoviesAPI.Profiles
             CreateMap<CreateMovieDto, Movie>();
             CreateMap<UpdateMovieDto, Movie>();
             CreateMap<Movie, ReadMovieDto>();
+
         }
     }
 }

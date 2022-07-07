@@ -1,12 +1,12 @@
-﻿using AutoMapper;
+﻿using FluentResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MoviesAPI.Components;
-using MoviesAPI.Data;
 using MoviesAPI.Data.Dtos.Manager;
-using MoviesAPI.Interfaces;
 using MoviesAPI.Models;
+using MoviesAPI.Services.ServicesInterfaces;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MoviesAPI.Controllers
 {
@@ -14,25 +14,45 @@ namespace MoviesAPI.Controllers
     [Route("[controller]")]
     public class ManagerController : ControllerBase
     {
-        private readonly AppDbContext _context;
-        private readonly IMapper _mapper;
-        private readonly IManager _managerInterface;
+        private readonly IManagerService _managerService;
 
-        public ManagerController(AppDbContext context, IMapper mapper)
+        public ManagerController(IManagerService managerService)
         {
-            _context = context;
-            _mapper = mapper;
-            _managerInterface = new ManagerComponent(context);
+            _managerService = managerService;
         }
 
         #region GetManager
 
         [HttpGet]
+        [Route("all")]
         public IActionResult GetAllManagers()
         {
             try
             {
-                return Ok(_managerInterface.GetAllManagers());
+                List<Manager> managers = _managerService.GetAllManagers();
+
+                if(managers.Count > 0)
+                    return Ok(managers);
+
+                return NotFound("There isn't any managers registered.");
+            }
+            catch (Exception message)
+            {
+                return StatusCode(500, message.Message);
+            }
+        }
+
+        [HttpGet]
+        public IActionResult GetAllManagers(string name)
+        {
+            try
+            {
+                List<Manager> managers = _managerService.GetAllManagers(name);
+
+                if (managers.Count > 0)
+                    return Ok();
+
+                return NotFound("There isn't any managers registered.");
             }
             catch (Exception message)
             {
@@ -49,13 +69,10 @@ namespace MoviesAPI.Controllers
         {
             try
             {
-                Manager Manager = _managerInterface.GetManagerById(id);
+                ReadManagerDto readManager = _managerService.GetManagerById(id);
 
-                if (Manager != null)
-                {
-                    ReadManagerDto readMovie = _mapper.Map<ReadManagerDto>(Manager);
-                    return Ok(readMovie);
-                }
+                if (readManager != null)
+                    return Ok(readManager);
 
                 return NotFound(new { Message = "Informed manager doesn't exist or wasn't found." });
             }
@@ -74,8 +91,7 @@ namespace MoviesAPI.Controllers
         {
             try
             {
-                Manager manager = _mapper.Map<Manager>(managerDto);
-                _managerInterface.AddManager(manager);
+                ReadManagerDto manager = _managerService.AddManager(managerDto);
                 return CreatedAtAction(nameof(GetManagerById), new { manager.Id }, manager);
             }
             catch (DbUpdateException message)
@@ -93,13 +109,15 @@ namespace MoviesAPI.Controllers
         #region UpdateManager
 
         [HttpPut("{id}")]
-        public IActionResult UpdateMovie(int id, [FromBody] UpdateManagerDto updateMovie)
+        public IActionResult UpdateMovie(int id, [FromBody] UpdateManagerDto updateManager)
         {
             try
             {
-                Manager Manager = _managerInterface.GetManagerById(id);
-                _mapper.Map(updateMovie, Manager);
-                _managerInterface.UpdateManager(Manager);
+                Result result = _managerService.UpdateManager(id, updateManager);
+
+                if (result.IsFailed)
+                    return NotFound(result.Errors.FirstOrDefault(error => !string.IsNullOrEmpty(error.Message)).Message);
+
                 return Ok(new { Message = "Manager successfully updated." });
             }
             catch (DbUpdateException message)
@@ -121,7 +139,11 @@ namespace MoviesAPI.Controllers
         {
             try
             {
-                _managerInterface.DeleteManager(id);
+                Result result = _managerService.DeleteManager(id);
+
+                if (result.IsFailed)
+                    return NotFound(result.Errors.FirstOrDefault(error => !string.IsNullOrEmpty(error.Message)).Message);
+
                 return Ok(new { Message = "Manager successfully deleted." });
             }
             catch (DbUpdateException message)
