@@ -1,5 +1,6 @@
 ﻿using FluentResults;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 using UsersAPI.Data.Dto;
 using UsersAPI.Services.ServicesInterfaces;
 
@@ -22,7 +23,8 @@ namespace UsersAPI.Controllers
             Result result = _registerService.RegisterUser(newUser);
 
             if (result.IsFailed)
-                return StatusCode(500);
+                return StatusCode(500, result.Errors.Where(error => !string.IsNullOrEmpty(error.Message))
+                                                    .Select(message => message.Message));
 
             return Ok();
         }
