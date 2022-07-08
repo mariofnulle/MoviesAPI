@@ -37,6 +37,9 @@ namespace UsersAPI
                 .AddEntityFrameworkStores<UserDbContext>();
 
             services.AddScoped<IRegisterService, RegisterService>();
+            services.AddScoped<ILoginService, LoginService>();
+            services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<ILogoutService, LogoutService>();
 
             services.AddControllers();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
