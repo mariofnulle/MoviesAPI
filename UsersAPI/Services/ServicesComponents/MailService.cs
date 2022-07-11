@@ -33,7 +33,7 @@ namespace UsersAPI.Services.ServicesComponents
 
         private void Send(MimeMessage mailMessage)
         {
-            using (var client = new SmtpClient())
+            using (SmtpClient client = new SmtpClient())
             {
                 try
                 {

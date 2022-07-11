@@ -21,18 +21,16 @@ namespace UsersAPI.Services.ServicesComponents
                 new Claim("id", user.Id.ToString())
             };
 
-            var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes("Xn2r5u8x/A?D(G+K")
-                );
+            SymmetricSecurityKey key = new(Encoding.UTF8.GetBytes("Xn2r5u8x/A?D(G+K"));
 
-            var credencials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var token = new JwtSecurityToken(
+            SigningCredentials credencials = new(key, SecurityAlgorithms.HmacSha256);
+            JwtSecurityToken token = new(
                 claims: userRights,
                 signingCredentials: credencials,
                 expires: DateTime.UtcNow.AddHours(1)
                 );
 
-            var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+            string tokenString = new JwtSecurityTokenHandler().WriteToken(token);
             return new Token(tokenString);
         }
 

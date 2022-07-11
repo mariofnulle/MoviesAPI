@@ -1,5 +1,6 @@
 ﻿using FluentResults;
 using Microsoft.AspNetCore.Identity;
+using System.Threading.Tasks;
 using UsersAPI.Services.ServicesInterfaces;
 
 namespace UsersAPI.Services.ServicesComponents
@@ -17,7 +18,7 @@ namespace UsersAPI.Services.ServicesComponents
 
         public Result Logout()
         {
-            var identityResult = _signInManager.SignOutAsync();
+            Task identityResult = _signInManager.SignOutAsync();
 
             if (identityResult.IsCompletedSuccessfully)
                 return Result.Ok();

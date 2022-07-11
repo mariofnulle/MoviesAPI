@@ -29,8 +29,8 @@ namespace UsersAPI.Services.ServicesComponents
 
         public Result ActivateUserAccount(ActivateAccountRequest request)
         {
-            var identityUser = _userManger.Users.FirstOrDefault(user => user.Id == request.UserId);
-            var identityResult = _userManger.ConfirmEmailAsync(identityUser, request.ActivationCode).Result;
+            IdentityUser<int> identityUser = _userManger.Users.FirstOrDefault(user => user.Id == request.UserId);
+            IdentityResult identityResult = _userManger.ConfirmEmailAsync(identityUser, request.ActivationCode).Result;
 
             if (identityResult.Succeeded)
                 return Result.Ok();
@@ -50,13 +50,13 @@ namespace UsersAPI.Services.ServicesComponents
 
             if (identityResult.Result.Succeeded)
             {
-                var emailConfirmation = _userManger.GenerateEmailConfirmationTokenAsync(identityUser);
+                string emailConfirmation = _userManger.GenerateEmailConfirmationTokenAsync(identityUser).Result;
 
-                var encodedCode = HttpUtility.UrlEncode(emailConfirmation.Result);
+                string encodedCode = HttpUtility.UrlEncode(emailConfirmation);
 
                 _emailService.SendMail(new[] { identityUser.Email }, "Activation Link", identityUser.Id, encodedCode);
 
-                return Result.Ok().WithSuccess(emailConfirmation.Result);
+                return Result.Ok().WithSuccess(encodedCode);
             }
 
             return Result.Fail("An error ocurred when registering a new user.");
