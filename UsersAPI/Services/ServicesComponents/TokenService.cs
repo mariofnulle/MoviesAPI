@@ -11,6 +11,8 @@ namespace UsersAPI.Services.ServicesComponents
 {
     public class TokenService : ITokenService
     {
+        #region CreateToken
+
         public Token CreateToken(IdentityUser<int> user)
         {
             Claim[] userRights = new Claim[]
@@ -33,5 +35,7 @@ namespace UsersAPI.Services.ServicesComponents
             var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
             return new Token(tokenString);
         }
+
+        #endregion
     }
 }

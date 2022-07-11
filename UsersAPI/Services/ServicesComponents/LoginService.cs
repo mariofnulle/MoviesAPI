@@ -18,6 +18,8 @@ namespace UsersAPI.Services.ServicesComponents
             _tokenService = tokenService;
         }
 
+        #region UserLogin
+
         public Result UserLogin(LoginRequest request)
         {
             var identityResult = _signInManager.PasswordSignInAsync(request.UserName, request.Password, false, false);
@@ -33,5 +35,7 @@ namespace UsersAPI.Services.ServicesComponents
 
             return Result.Fail("Login failed.");
         }
+
+        #endregion
     }
 }

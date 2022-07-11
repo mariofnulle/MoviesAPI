@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using UsersAPI.Data.Dto;
 using UsersAPI.Data.Requests;
 using UsersAPI.Models;
@@ -15,12 +16,16 @@ namespace UsersAPI.Services.ServicesComponents
     {
         private readonly IMapper _mapper;
         private readonly UserManager<IdentityUser<int>> _userManger;
+        private readonly IMailService _emailService;
 
-        public RegisterService(IMapper mapper, UserManager<IdentityUser<int>> userManger)
+        public RegisterService(IMapper mapper, UserManager<IdentityUser<int>> userManger, IMailService emailService)
         {
             _mapper = mapper;
             _userManger = userManger;
+            _emailService = emailService;
         }
+
+        #region ActivateUserAccount
 
         public Result ActivateUserAccount(ActivateAccountRequest request)
         {
@@ -33,6 +38,10 @@ namespace UsersAPI.Services.ServicesComponents
             return Result.Fail("Error activating account.");
         }
 
+        #endregion
+
+        #region RegisterUser
+
         public Result RegisterUser(CreateUserDto newUser)
         {
             User user = _mapper.Map<User>(newUser);
@@ -42,10 +51,17 @@ namespace UsersAPI.Services.ServicesComponents
             if (identityResult.Result.Succeeded)
             {
                 var emailConfirmation = _userManger.GenerateEmailConfirmationTokenAsync(identityUser);
+
+                var encodedCode = HttpUtility.UrlEncode(emailConfirmation.Result);
+
+                _emailService.SendMail(new[] { identityUser.Email }, "Activation Link", identityUser.Id, encodedCode);
+
                 return Result.Ok().WithSuccess(emailConfirmation.Result);
             }
 
             return Result.Fail("An error ocurred when registering a new user.");
         }
+
+        #endregion
     }
 }

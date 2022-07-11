@@ -16,6 +16,8 @@ namespace UsersAPI.Controllers
             _logoutService = logoutService;
         }
 
+        #region Logout
+
         [HttpPost]
         public IActionResult Logout()
         {
@@ -28,5 +30,7 @@ namespace UsersAPI.Controllers
             return Ok(result.Successes.Where(successes => !string.IsNullOrEmpty(successes.Message))
                                                  .Select(message => message.Message));
         }
+
+        #endregion
     }
 }

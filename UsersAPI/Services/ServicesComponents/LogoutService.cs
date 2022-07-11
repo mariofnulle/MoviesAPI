@@ -13,6 +13,8 @@ namespace UsersAPI.Services.ServicesComponents
             _signInManager = signInManager;
         }
 
+        #region Logout
+
         public Result Logout()
         {
             var identityResult = _signInManager.SignOutAsync();
@@ -22,5 +24,7 @@ namespace UsersAPI.Services.ServicesComponents
 
             return Result.Fail("Logout failed.");
         }
+
+        #endregion
     }
 }
