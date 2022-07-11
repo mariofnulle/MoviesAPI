@@ -1,6 +1,5 @@
 ﻿using FluentResults;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using System.Linq;
 using UsersAPI.Data.Requests;
 using UsersAPI.Services.ServicesInterfaces;
@@ -18,6 +17,8 @@ namespace UsersAPI.Controllers
             _loginService = loginService;
         }
 
+        #region UserLogin
+
         [HttpPost]
         public IActionResult UserLogin(LoginRequest request)
         {
@@ -30,5 +31,7 @@ namespace UsersAPI.Controllers
             return Ok(result.Successes.Where(error => !string.IsNullOrEmpty(error.Message))
                                       .Select(message => message.Message));
         }
+
+        #endregion
     }
 }

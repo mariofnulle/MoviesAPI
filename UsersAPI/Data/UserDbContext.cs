@@ -6,9 +6,6 @@ namespace UsersAPI.Data
 {
     public class UserDbContext : IdentityDbContext<IdentityUser<int>, IdentityRole<int>, int>
     {
-        public UserDbContext(DbContextOptions<UserDbContext> options) :base(options)
-        {
-
-        }
+        public UserDbContext(DbContextOptions<UserDbContext> options) : base(options) { }
     }
 }
