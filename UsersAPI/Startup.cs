@@ -27,6 +27,9 @@ namespace UsersAPI
             services.AddIdentity<IdentityUser<int>, IdentityRole<int>>(options =>
             {
                 options.SignIn.RequireConfirmedEmail = true;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.AllowedForNewUsers = true;
             })
                 .AddEntityFrameworkStores<UserDbContext>()
                 .AddDefaultTokenProviders();
