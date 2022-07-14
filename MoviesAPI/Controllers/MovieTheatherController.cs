@@ -1,4 +1,5 @@
 ﻿using FluentResults;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoviesAPI.Data.Dtos.MovieTheather;
@@ -87,6 +88,7 @@ namespace MoviesAPI.Controllers
         #region AddMovieTheather
 
         [HttpPost]
+        [Authorize(Roles = "admin")]
         public IActionResult AddMovieTheather([FromBody] CreateMovieTheatherDto newMovie)
         {
             try
@@ -109,6 +111,7 @@ namespace MoviesAPI.Controllers
         #region UpdateMovieTheather
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "admin")]
         public IActionResult UpdateMovie(int id, [FromBody] UpdateMovieTheatherDto updateMovie)
         {
             try
@@ -135,6 +138,7 @@ namespace MoviesAPI.Controllers
         #region DeleteMovieTheather
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin")]
         public IActionResult DeleteMovieTheather(int id)
         {
             try

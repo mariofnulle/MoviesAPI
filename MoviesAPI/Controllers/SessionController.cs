@@ -1,4 +1,5 @@
 ﻿using FluentResults;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoviesAPI.Data.Dtos.Session;
@@ -86,6 +87,7 @@ namespace MoviesAPI.Controllers
         #region AddSession
 
         [HttpPost]
+        [Authorize(Roles = "admin")]
         public IActionResult AddSession(CreateSessionDto sessionDto)
         {
             try
@@ -108,6 +110,7 @@ namespace MoviesAPI.Controllers
         #region UpdateSession
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "admin")]
         public IActionResult UpdateMovie(int id, [FromBody] UpdateSessionDto updateSession)
         {
             try
@@ -134,6 +137,7 @@ namespace MoviesAPI.Controllers
         #region DeleteSession
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin")]
         public IActionResult DeleteSession(int id)
         {
             try

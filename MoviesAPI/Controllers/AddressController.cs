@@ -1,4 +1,5 @@
 ﻿using FluentResults;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoviesAPI.Data.Dtos.Address;
@@ -87,6 +88,7 @@ namespace MoviesAPI.Controllers
         #region AddAddress
 
         [HttpPost]
+        [Authorize(Roles = "admin")]
         public IActionResult AddAddress([FromBody] CreateAddressDto newAddress)
         {
             try
@@ -109,6 +111,7 @@ namespace MoviesAPI.Controllers
         #region UpdateAddress
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "admin")]
         public IActionResult UpdateMovie(int id, [FromBody] UpdateAddressDto updateAddress)
         {
             try
@@ -135,6 +138,7 @@ namespace MoviesAPI.Controllers
         #region DeleteAddress
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin")]
         public IActionResult DeleteAddress(int id)
         {
             try

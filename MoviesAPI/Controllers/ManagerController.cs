@@ -1,4 +1,5 @@
 ﻿using FluentResults;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoviesAPI.Data.Dtos.Manager;
@@ -87,6 +88,7 @@ namespace MoviesAPI.Controllers
         #region AddManager
 
         [HttpPost]
+        [Authorize(Roles = "admin")]
         public IActionResult AddManager(CreateManagerDto managerDto)
         {
             try
@@ -109,6 +111,7 @@ namespace MoviesAPI.Controllers
         #region UpdateManager
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "admin")]
         public IActionResult UpdateMovie(int id, [FromBody] UpdateManagerDto updateManager)
         {
             try
@@ -135,6 +138,7 @@ namespace MoviesAPI.Controllers
         #region DeleteManager
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin")]
         public IActionResult DeleteManager(int id)
         {
             try
