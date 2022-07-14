@@ -26,7 +26,7 @@ namespace MoviesAPI.Controllers
 
         [HttpGet]
         [Route("all")]
-        [Authorize(Roles = "admin, regular")]
+        [Authorize(Roles = "admin, regular", Policy = "MinAge")]
         public IActionResult GetAllMovies()
         {
             try

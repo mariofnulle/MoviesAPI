@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MoviesAPI.Components;
+using MoviesAPI.CustomAuthorization;
 using MoviesAPI.Data;
 using MoviesAPI.Interfaces;
 using MoviesAPI.Services;
@@ -49,6 +50,14 @@ namespace MoviesAPI
                         ClockSkew = TimeSpan.Zero
                     };
                 });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("MinAge", policy =>
+                {
+                    policy.Requirements.Add(new MinimumAgeRequirement(18));
+                });
+            });
 
             ConfigurationServices.RegisterDependencies(services);
             

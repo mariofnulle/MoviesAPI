@@ -19,7 +19,8 @@ namespace UsersAPI.Services.ServicesComponents
             {
                 new Claim("username", user.UserName),
                 new Claim("id", user.Id.ToString()),
-                new Claim(ClaimTypes.Role, role)
+                new Claim(ClaimTypes.Role, role),
+                new Claim(ClaimTypes.DateOfBirth, user.BirthDate.ToString())
             };
 
             SymmetricSecurityKey key = new(Encoding.UTF8.GetBytes("Xn2r5u8x/A?D(G+K"));
