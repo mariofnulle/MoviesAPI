@@ -26,6 +26,7 @@ namespace MoviesAPI.Controllers
 
         [HttpGet]
         [Route("all")]
+        [Authorize(Roles = "admin, regular")]
         public IActionResult GetAllMovieTheathers()
         {
             try
@@ -44,6 +45,7 @@ namespace MoviesAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "admin, regular")]
         public IActionResult GetAllMovieTheathers(string movieName)
         {
             try
@@ -66,6 +68,7 @@ namespace MoviesAPI.Controllers
         #region GetMovieTheatherById
 
         [HttpGet ("{id}")]
+        [Authorize(Roles = "admin, regular")]
         public IActionResult GetMovieTheatherById(int id)
         {
             try

@@ -26,6 +26,7 @@ namespace MoviesAPI.Controllers
 
         [HttpGet]
         [Route("all")]
+        [Authorize(Roles = "admin, regular")]
         public IActionResult GetAllManagers()
         {
             try
@@ -44,6 +45,7 @@ namespace MoviesAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "admin, regular")]
         public IActionResult GetAllManagers(string name)
         {
             try
@@ -66,6 +68,7 @@ namespace MoviesAPI.Controllers
         #region GetManagerById
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "admin, regular")]
         public IActionResult GetManagerById(int id)
         {
             try

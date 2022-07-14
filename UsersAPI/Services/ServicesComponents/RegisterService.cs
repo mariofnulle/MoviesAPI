@@ -15,11 +15,10 @@ namespace UsersAPI.Services.ServicesComponents
     public class RegisterService : IRegisterService
     {
         private readonly IMapper _mapper;
-        private readonly UserManager<IdentityUser<int>> _userManger;
+        private readonly UserManager<CustomIdentityUser> _userManger;
         private readonly IMailService _emailService;
-        private readonly RoleManager<IdentityUser<int>> _roleManager;
 
-        public RegisterService(IMapper mapper, UserManager<IdentityUser<int>> userManger, IMailService emailService)
+        public RegisterService(IMapper mapper, UserManager<CustomIdentityUser> userManger, IMailService emailService)
         {
             _mapper = mapper;
             _userManger = userManger;
@@ -30,7 +29,7 @@ namespace UsersAPI.Services.ServicesComponents
 
         public Result ActivateUserAccount(ActivateAccountRequest request)
         {
-            IdentityUser<int> identityUser = _userManger.Users.FirstOrDefault(user => user.Id == request.UserId);
+            CustomIdentityUser identityUser = _userManger.Users.FirstOrDefault(user => user.Id == request.UserId);
             IdentityResult identityResult = _userManger.ConfirmEmailAsync(identityUser, request.ActivationCode).Result;
 
             if (identityResult.Succeeded)
@@ -46,11 +45,9 @@ namespace UsersAPI.Services.ServicesComponents
         public Result RegisterUser(CreateUserDto newUser)
         {
             User user = _mapper.Map<User>(newUser);
-            IdentityUser<int> identityUser = _mapper.Map<IdentityUser<int>>(user);
+            CustomIdentityUser identityUser = _mapper.Map<CustomIdentityUser>(user);
             Task<IdentityResult> identityResult = _userManger.CreateAsync(identityUser, newUser.Password);
-
-            IdentityResult createRole = _roleManager.CreateAsync(new IdentityUser<int>("admin")).Result;
-            IdentityResult userRole = _userManger.AddToRoleAsync(identityUser, "admin").Result;
+            _userManger.AddToRoleAsync(identityUser, "regular");
 
             if (identityResult.Result.Succeeded)
             {

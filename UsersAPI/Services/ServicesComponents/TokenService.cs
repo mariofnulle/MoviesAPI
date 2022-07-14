@@ -13,7 +13,7 @@ namespace UsersAPI.Services.ServicesComponents
     {
         #region CreateToken
 
-        public Token CreateToken(IdentityUser<int> user, string role)
+        public Token CreateToken(CustomIdentityUser user, string role)
         {
             Claim[] userRights = new Claim[]
             {

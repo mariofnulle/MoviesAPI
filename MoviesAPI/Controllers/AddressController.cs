@@ -26,6 +26,7 @@ namespace MoviesAPI.Controllers
 
         [HttpGet]
         [Route("all")]
+        [Authorize(Roles = "admin, regular")]
         public IActionResult GetAllAddress()
         {
             try
@@ -44,6 +45,7 @@ namespace MoviesAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "admin, regular")]
         public IActionResult GetAllAddress(string addressName, string neighbordhood, int? number)
         {
             try
@@ -66,6 +68,7 @@ namespace MoviesAPI.Controllers
         #region GetAddressById
 
         [HttpGet ("{id}")]
+        [Authorize(Roles = "admin, regular")]
         public IActionResult GetAddressById(int id)
         {
             try

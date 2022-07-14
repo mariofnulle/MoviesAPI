@@ -26,6 +26,7 @@ namespace MoviesAPI.Controllers
 
         [HttpGet]
         [Route("all")]
+        [Authorize(Roles = "admin, regular")]
         public IActionResult GetAllMovies()
         {
             try
@@ -44,6 +45,7 @@ namespace MoviesAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "admin, regular")]
         public IActionResult GetAllMovies([FromQuery] string title, [FromQuery] string director,
                                           [FromQuery] string gender, [FromQuery] int? duration, [FromQuery] Rate rate = Rate.None)
         {
@@ -67,6 +69,7 @@ namespace MoviesAPI.Controllers
         #region GetMovieById
 
         [HttpGet ("{id}")]
+        [Authorize(Roles = "admin, regular")]
         public IActionResult GetMovieById(int id)
         {
             try

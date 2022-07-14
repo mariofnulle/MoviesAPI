@@ -11,11 +11,11 @@ namespace UsersAPI.Services.ServicesComponents
 {
     public class LoginService : ILoginService
     {
-        private readonly SignInManager<IdentityUser<int>> _signInManager;
+        private readonly SignInManager<CustomIdentityUser> _signInManager;
         private readonly ITokenService _tokenService;
         private readonly IMailService _emailService;
 
-        public LoginService(SignInManager<IdentityUser<int>> signInManager, ITokenService tokenService, IMailService emailService)
+        public LoginService(SignInManager<CustomIdentityUser> signInManager, ITokenService tokenService, IMailService emailService)
         {
             _signInManager = signInManager;
             _tokenService = tokenService;
@@ -26,7 +26,7 @@ namespace UsersAPI.Services.ServicesComponents
 
         public Result ForgetPassword(ForgetPasswordRequest request)
         {
-            IdentityUser<int> identityUser = GetUserByEmail(request.Email);
+            CustomIdentityUser identityUser = GetUserByEmail(request.Email);
 
             if (identityUser != null)
             {
@@ -45,7 +45,7 @@ namespace UsersAPI.Services.ServicesComponents
 
         public Result ResetUserPassword(PasswordResetRequest request)
         {
-            IdentityUser<int> identityUser = GetUserByEmail(request.Email);
+            CustomIdentityUser identityUser = GetUserByEmail(request.Email);
             IdentityResult identityResult = _signInManager.UserManager.ResetPasswordAsync(identityUser, request.Token, request.Password).Result;
 
             if (identityResult.Succeeded)
@@ -64,7 +64,7 @@ namespace UsersAPI.Services.ServicesComponents
 
             if (identityResult.Result.Succeeded)
             {
-                IdentityUser<int> identityUser = _signInManager.UserManager.Users
+                CustomIdentityUser identityUser = _signInManager.UserManager.Users
                                    .FirstOrDefault(user => user.NormalizedUserName == request.UserName.ToUpper());
 
                 Token token = _tokenService.CreateToken(identityUser, 
@@ -82,7 +82,7 @@ namespace UsersAPI.Services.ServicesComponents
 
         #region GetUserByEmail
 
-        private IdentityUser<int> GetUserByEmail(string email)
+        private CustomIdentityUser GetUserByEmail(string email)
         {
             return _signInManager.UserManager.Users.FirstOrDefault(user => user.NormalizedEmail == email.ToUpper());
         }
