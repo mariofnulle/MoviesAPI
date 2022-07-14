@@ -17,6 +17,7 @@ namespace UsersAPI.Services.ServicesComponents
         private readonly IMapper _mapper;
         private readonly UserManager<IdentityUser<int>> _userManger;
         private readonly IMailService _emailService;
+        private readonly RoleManager<IdentityUser<int>> _roleManager;
 
         public RegisterService(IMapper mapper, UserManager<IdentityUser<int>> userManger, IMailService emailService)
         {
@@ -47,6 +48,9 @@ namespace UsersAPI.Services.ServicesComponents
             User user = _mapper.Map<User>(newUser);
             IdentityUser<int> identityUser = _mapper.Map<IdentityUser<int>>(user);
             Task<IdentityResult> identityResult = _userManger.CreateAsync(identityUser, newUser.Password);
+
+            IdentityResult createRole = _roleManager.CreateAsync(new IdentityUser<int>("admin")).Result;
+            IdentityResult userRole = _userManger.AddToRoleAsync(identityUser, "admin").Result;
 
             if (identityResult.Result.Succeeded)
             {

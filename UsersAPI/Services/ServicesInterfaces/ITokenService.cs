@@ -5,6 +5,6 @@ namespace UsersAPI.Services.ServicesInterfaces
 {
     public interface ITokenService
     {
-        Token CreateToken(IdentityUser<int> user);
+        Token CreateToken(IdentityUser<int> user, string v);
     }
 }
