@@ -1,4 +1,5 @@
 ﻿using FluentResults;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoviesAPI.Data.Dtos.Movie;
@@ -25,6 +26,7 @@ namespace MoviesAPI.Controllers
 
         [HttpGet]
         [Route("all")]
+        [Authorize(Roles = "admin, regular", Policy = "MinAge")]
         public IActionResult GetAllMovies()
         {
             try
@@ -43,6 +45,7 @@ namespace MoviesAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "admin, regular")]
         public IActionResult GetAllMovies([FromQuery] string title, [FromQuery] string director,
                                           [FromQuery] string gender, [FromQuery] int? duration, [FromQuery] Rate rate = Rate.None)
         {
@@ -66,6 +69,7 @@ namespace MoviesAPI.Controllers
         #region GetMovieById
 
         [HttpGet ("{id}")]
+        [Authorize(Roles = "admin, regular")]
         public IActionResult GetMovieById(int id)
         {
             try
@@ -88,6 +92,7 @@ namespace MoviesAPI.Controllers
         #region AddMovie
 
         [HttpPost]
+        [Authorize(Roles = "admin")]
         public IActionResult AddMovie([FromBody] CreateMovieDto newMovie)
         {
             try
@@ -110,6 +115,7 @@ namespace MoviesAPI.Controllers
         #region UpdateMovie
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "admin")]
         public IActionResult UpdateMovie(int id, [FromBody] UpdateMovieDto updateMovie)
         {
             try
@@ -136,6 +142,7 @@ namespace MoviesAPI.Controllers
         #region DeleteMovie
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin")]
         public IActionResult DeleteMovie(int id)
         {
             try

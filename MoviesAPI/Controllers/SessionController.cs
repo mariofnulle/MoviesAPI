@@ -1,4 +1,5 @@
 ﻿using FluentResults;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoviesAPI.Data.Dtos.Session;
@@ -24,6 +25,7 @@ namespace MoviesAPI.Controllers
 
         [HttpGet]
         [Route("all")]
+        [Authorize(Roles = "admin, regular")]
         public IActionResult GetAllSessions()
         {
             try
@@ -42,6 +44,7 @@ namespace MoviesAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "admin, regular")]
         public IActionResult GetAllSessions(int? theatherId, int? movieId)
         {
             try
@@ -64,6 +67,7 @@ namespace MoviesAPI.Controllers
         #region GetSessionById
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "admin, regular")]
         public IActionResult GetSessionById(int id)
         {
             try
@@ -86,6 +90,7 @@ namespace MoviesAPI.Controllers
         #region AddSession
 
         [HttpPost]
+        [Authorize(Roles = "admin")]
         public IActionResult AddSession(CreateSessionDto sessionDto)
         {
             try
@@ -108,6 +113,7 @@ namespace MoviesAPI.Controllers
         #region UpdateSession
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "admin")]
         public IActionResult UpdateMovie(int id, [FromBody] UpdateSessionDto updateSession)
         {
             try
@@ -134,6 +140,7 @@ namespace MoviesAPI.Controllers
         #region DeleteSession
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin")]
         public IActionResult DeleteSession(int id)
         {
             try

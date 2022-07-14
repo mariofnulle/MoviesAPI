@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.DependencyInjection;
 using MoviesAPI.Components;
+using MoviesAPI.CustomAuthorization;
 using MoviesAPI.Interfaces;
 using MoviesAPI.Services.ServicesComponents;
 using MoviesAPI.Services.ServicesInterfaces;
@@ -24,6 +26,8 @@ namespace MoviesAPI
 
             services.AddScoped<ISession, SessionComponent>();
             services.AddScoped<ISessionService, SessionService>();
+
+            services.AddSingleton<IAuthorizationHandler, MinimumAgeHandler>();
         }
     }
 }

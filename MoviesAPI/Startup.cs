@@ -1,15 +1,19 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MoviesAPI.Components;
+using MoviesAPI.CustomAuthorization;
 using MoviesAPI.Data;
 using MoviesAPI.Interfaces;
 using MoviesAPI.Services;
 using System;
+using System.Text;
 
 namespace MoviesAPI
 {
@@ -27,6 +31,33 @@ namespace MoviesAPI
         {
             services.AddDbContext<AppDbContext>(options => options.UseLazyLoadingProxies().UseSqlServer(Configuration.GetConnectionString("MovieConnection")));
             services.AddControllers();
+
+            services.AddAuthentication(auth =>
+            {
+                auth.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                auth.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+                .AddJwtBearer(token =>
+                {
+                    token.RequireHttpsMetadata = false;
+                    token.SaveToken = true;
+                    token.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Xn2r5u8x/A?D(G+K")),
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ClockSkew = TimeSpan.Zero
+                    };
+                });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("MinAge", policy =>
+                {
+                    policy.Requirements.Add(new MinimumAgeRequirement(18));
+                });
+            });
 
             ConfigurationServices.RegisterDependencies(services);
             
@@ -53,6 +84,8 @@ namespace MoviesAPI
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseAuthentication();
 
             app.UseEndpoints(endpoints =>
             {

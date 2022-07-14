@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using UsersAPI.Data;
+using UsersAPI.Models;
 
 namespace UsersAPI
 {
@@ -24,9 +25,12 @@ namespace UsersAPI
         {
             services.AddDbContext<UserDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("UserConnection")));
-            services.AddIdentity<IdentityUser<int>, IdentityRole<int>>(options =>
+            services.AddIdentity<CustomIdentityUser, IdentityRole<int>>(options =>
             {
                 options.SignIn.RequireConfirmedEmail = true;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.AllowedForNewUsers = true;
             })
                 .AddEntityFrameworkStores<UserDbContext>()
                 .AddDefaultTokenProviders();

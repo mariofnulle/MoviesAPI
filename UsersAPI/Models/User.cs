@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace UsersAPI.Models
 {
@@ -10,5 +11,7 @@ namespace UsersAPI.Models
         public string UserName { get; set; }
         [Required]
         public string Email { get; set; }
+
+        public DateTime BirthDate { get; set; }
     }
 }

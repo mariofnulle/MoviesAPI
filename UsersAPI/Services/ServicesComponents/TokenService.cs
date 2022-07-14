@@ -13,12 +13,14 @@ namespace UsersAPI.Services.ServicesComponents
     {
         #region CreateToken
 
-        public Token CreateToken(IdentityUser<int> user)
+        public Token CreateToken(CustomIdentityUser user, string role)
         {
             Claim[] userRights = new Claim[]
             {
                 new Claim("username", user.UserName),
-                new Claim("id", user.Id.ToString())
+                new Claim("id", user.Id.ToString()),
+                new Claim(ClaimTypes.Role, role),
+                new Claim(ClaimTypes.DateOfBirth, user.BirthDate.ToString())
             };
 
             SymmetricSecurityKey key = new(Encoding.UTF8.GetBytes("Xn2r5u8x/A?D(G+K"));
